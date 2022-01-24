@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # compile and run project
-export JAVA_HOME=/usr/java/default
-export PATH=${JAVA_HOME}/bin:${PATH}
-export HADOOP_CLASSPATH=${JAVA_HOME}/lib/tools.jar
 
 # go to project directory
 cd /project
+
+# remove old directories
+hadoop fs -rm -r output
+hadoop fs -rm -r input
+hadoop fs -rm -r tmpdata
 
 # create input directory on HDFS
 hadoop fs -mkdir -p input
@@ -19,7 +21,7 @@ hadoop com.sun.tools.javac.Main Project.java
 jar cf project.jar Project*.class
 
 # run project
-hadoop jar project.jar Project input output
+hadoop jar project.jar Project input output tmpdata
 
 # print the input files
 echo -e "\ninput file1.txt:"

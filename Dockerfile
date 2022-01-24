@@ -18,6 +18,9 @@ ENV JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
 ENV HADOOP_HOME=/usr/local/hadoop 
 ENV PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin 
 
+ENV PATH=$JAVA_HOME/bin:$PATH
+ENV HADOOP_CLASSPATH=$JAVA_HOME/lib/tools.jar
+
 # ssh without key
 RUN ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' && \
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
