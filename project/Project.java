@@ -21,8 +21,8 @@ public class Project {
       StringTokenizer itr = new StringTokenizer(value.toString(), "-");
       String u = itr.nextToken();
       String v = itr.nextToken();
-      context.write(new Text(u), new Text(u + ";" + v));
-      context.write(new Text(v), new Text(u + ";" + v));
+      context.write(new Text(u), new Text(u + "$" + v));
+      context.write(new Text(v), new Text(u + "$" + v));
     }
   }
 
@@ -41,18 +41,30 @@ public class Project {
       }
                            
       for (String val : countedValues) {
-        StringTokenizer itr = new StringTokenizer(val, ";");
+        StringTokenizer itr = new StringTokenizer(val, "$");
         String u = itr.nextToken();
         String v = itr.nextToken();
         String valS;
         if (u.equals(key.toString())) {
-          valS = String.valueOf(size) + ";";
+          valS = String.valueOf(size) + "$x";
         }
         else {
-          valS = ";" + String.valueOf(size);
+          valS = "x$" + String.valueOf(size);
         }
-        context.write(new Text(u + ";" + v), new Text(valS));
+        context.write(new Text(u + "$" + v), new Text(valS));
       }
+    }
+  }
+
+  public static class SecondMapper
+       extends Mapper<Object, Text, Text, Text>{
+
+    public void map(Object key, Text value, Context context
+                    ) throws IOException, InterruptedException {
+      StringTokenizer itr = new StringTokenizer(value.toString());
+      String keyS = itr.nextToken();
+      String valS = itr.nextToken();
+      context.write(new Text(keyS), new Text(valS));
     }
   }
 
@@ -63,24 +75,24 @@ public class Project {
                        Context context
                        ) throws IOException, InterruptedException {
       
-      StringTokenizer keyItr = new StringTokenizer(key.toString(), ";");
+      StringTokenizer keyItr = new StringTokenizer(key.toString(), "$");
       String u = keyItr.nextToken();
       String v = keyItr.nextToken();
 
       String du = "";
       String dv = "";
       for (Text val : values) {
-        StringTokenizer itr = new StringTokenizer(val.toString(), ";");
+        StringTokenizer itr = new StringTokenizer(val.toString(), "$");
         String duP = itr.nextToken();
         String dvP = itr.nextToken();
-        if (!duP.equals("")) {
+        if (!duP.equals("x")) {
           du = duP;
         }
-        if (!dvP.equals("")) {
+        if (!dvP.equals("x")) {
           dv = dvP;
         }
       }
-      context.write(new Text(u + "-" + v),new Text("deg(" + u + ")=" + du + ",deg(" + dv + ")=" + dv));
+      context.write(new Text(u + "-" + v),new Text("deg(" + u + ")=" + du + ",deg(" + v + ")=" + dv));
     }
   }
 
@@ -101,6 +113,7 @@ public class Project {
     Configuration conf = new Configuration();
     Job job = Job.getInstance(conf, "second job");
     job.setJarByClass(Project.class);
+    job.setMapperClass(SecondMapper.class);
     job.setReducerClass(SecondReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
