@@ -13,6 +13,9 @@ hadoop fs -rm -r tmpdata
 # create input directory on HDFS
 hadoop fs -mkdir -p input
 
+# generate big test
+python3 ./gen.py 101 > input/file4.txt
+
 # put input files to HDFS
 hdfs dfs -put input/* input
 
@@ -32,5 +35,5 @@ hdfs dfs -cat input/file2.txt
 
 # print the output of project
 echo -e "\nproject output:"
-hdfs dfs -cat output/part-r-00000
+# hdfs dfs -cat output/part-r-00000
 

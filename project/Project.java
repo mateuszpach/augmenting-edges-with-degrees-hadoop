@@ -104,6 +104,7 @@ public class Project {
     job.setReducerClass(FirstReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
+    job.setNumReduceTasks(4);
     FileInputFormat.addInputPath(job, input);
     FileOutputFormat.setOutputPath(job, output);
     job.waitForCompletion(true);
@@ -117,6 +118,7 @@ public class Project {
     job.setReducerClass(SecondReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
+    job.setNumReduceTasks(4);
     FileInputFormat.addInputPath(job, input);
     FileOutputFormat.setOutputPath(job, output);
     job.waitForCompletion(true);
